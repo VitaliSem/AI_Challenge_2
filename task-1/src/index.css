@@ -1,6 +1,6 @@
 :root {
-  --bg: #eef4f7;
-  --bg-strong: #d8e6ef;
+  --bg: #f8fafc;
+  --bg-strong: #f8fafc;
   --card-bg: rgba(255, 255, 255, 0.9);
   --surface-soft: #edf4f8;
   --text: #3c5160;
@@ -18,9 +18,7 @@
   letter-spacing: 0.01em;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(44, 153, 211, 0.16), transparent 22%),
-    radial-gradient(circle at top right, rgba(8, 117, 163, 0.1), transparent 28%),
-    linear-gradient(180deg, #f7fbfd, var(--bg) 22%, var(--bg-strong));
+    linear-gradient(180deg, #f8fafc, var(--bg) 22%, var(--bg-strong));
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
