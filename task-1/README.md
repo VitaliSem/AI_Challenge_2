@@ -1,73 +1,18 @@
-# React + TypeScript + Vite
+# Task 1 / Leaderboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## AI tools used
 
-Currently, two official plugins are available:
+I worked on this task in Visual Studio Code using the GitHub Copilot local agent. Whenever I needed help with ideas, decisions, or alternative approaches, I also used Microsoft Copilot and Google Gemini.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Main steps
 
-## React Compiler
+I started by setting everything up with mock data. I explained the basic data structure to the GitHub Copilot agent and asked it to generate mock data with some predefined rules (like event names, categories, dates, and user details).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+After that, I split the main page into three core sections:
 
-## Expanding the ESLint configuration
+a filters area
+a top‑3 podium section
+a users list (cards with detailed info about events and recognitions)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Next, I took screenshots of the required UI design and shared them with the agent, along with an explanation of how the main components should be structured and how they should behave. The UI was built using the mock data logic from the previous step.
+Once the main structure was in place, I went over the app to polish things up. Small design and logic improvements were mostly done by asking the agent to focus on specific details, and I handled a few minor fixes myself.
