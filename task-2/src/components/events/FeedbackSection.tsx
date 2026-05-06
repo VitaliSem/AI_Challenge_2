@@ -6,18 +6,46 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 
+type FeedbackItem = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  attendeeName: string;
+};
+
 export default function FeedbackSection({ eventId, hasRsvp }: { eventId: string; hasRsvp: boolean }) {
   const { user } = useAuth();
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<FeedbackItem[]>([]);
   const [mine, setMine] = useState<any>(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
 
   const load = async () => {
-    const { data } = await supabase.from("feedback").select("*, profiles:user_id(name)").eq("event_id", eventId).order("created_at", { ascending: false });
-    setItems(data || []);
+    const [feedbackResult, reportResult] = await Promise.all([
+      supabase.from("feedback").select("*, profiles:user_id(name)").eq("event_id", eventId).order("created_at", { ascending: false }),
+      supabase.rpc("get_approved_event_feedback", { _event_id: eventId }),
+    ]);
+
+    const feedbackItems: FeedbackItem[] = (feedbackResult.data || []).map((f: any) => ({
+      id: `feedback-${f.id}`,
+      rating: f.rating,
+      comment: f.comment,
+      created_at: f.created_at,
+      attendeeName: f.profiles?.name || "Attendee",
+    }));
+
+    const approvedReportItems: FeedbackItem[] = (reportResult.data || []).map((f: any) => ({
+      id: `report-${f.id}`,
+      rating: f.rating,
+      comment: f.comment,
+      created_at: f.created_at,
+      attendeeName: f.reporter_name || "Attendee",
+    }));
+
+    setItems([...feedbackItems, ...approvedReportItems].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)));
     if (user) {
-      const m = data?.find((d: any) => d.user_id === user.id);
+      const m = feedbackResult.data?.find((d: any) => d.user_id === user.id);
       setMine(m);
       if (m) { setRating(m.rating); setComment(m.comment || ""); }
     }
@@ -53,7 +81,7 @@ export default function FeedbackSection({ eventId, hasRsvp }: { eventId: string;
       )}
       {items.length === 0 ? (
         <p className="text-muted-foreground text-sm">No feedback yet.</p>
-      ) : items.map((f: any) => (
+      ) : items.map((f) => (
         <div key={f.id} className="border-t pt-3">
           <div className="flex items-center gap-2 mb-1">
             <div className="flex">
@@ -61,7 +89,7 @@ export default function FeedbackSection({ eventId, hasRsvp }: { eventId: string;
                 <Star key={n} className={`h-3.5 w-3.5 ${n <= f.rating ? "fill-gold text-gold" : "text-muted-foreground/40"}`} />
               ))}
             </div>
-            <span className="text-sm font-semibold">{f.profiles?.name || "Attendee"}</span>
+            <span className="text-sm font-semibold">{f.attendeeName}</span>
           </div>
           {f.comment && <p className="text-sm text-foreground/80">{f.comment}</p>}
         </div>

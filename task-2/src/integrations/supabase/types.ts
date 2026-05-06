@@ -376,6 +376,18 @@ export type Database = {
         Args: { _event: string; _user: string }
         Returns: boolean
       }
+      get_approved_event_feedback: {
+        Args: { _event_id: string }
+        Returns: {
+          comment: string
+          created_at: string
+          event_id: string
+          id: string
+          rating: number
+          reporter_id: string
+          reporter_name: string
+        }[]
+      }
       get_events_ratings: {
         Args: { _event_ids: string[] }
         Returns: {
