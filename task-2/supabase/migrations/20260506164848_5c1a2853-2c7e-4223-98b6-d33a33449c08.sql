@@ -1,0 +1,1 @@
+ALTER TABLE public.reports ADD COLUMN rating smallint CHECK (rating >= 0 AND rating <= 5);
