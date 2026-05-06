@@ -22,10 +22,11 @@ export default function Explore() {
         .select("id, title, starts_at, ends_at, venue, online_url, cover_url, capacity, hosts(name, slug)")
         .eq("state", "published")
         .eq("visibility", "public")
-        .eq("hidden", false)
         .order("starts_at", { ascending: true });
 
-      if (!includePast) query = query.gte("ends_at", new Date().toISOString());
+      if (!includePast) {
+        query = query.eq("hidden", false).gte("ends_at", new Date().toISOString());
+      }
       if (q) query = query.ilike("title", `%${q}%`);
       if (loc) query = query.or(`venue.ilike.%${loc}%,location_text.ilike.%${loc}%`);
 

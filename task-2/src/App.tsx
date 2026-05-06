@@ -28,7 +28,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/AI_Challenge_2">
         <AuthProvider>
           <Routes>
             <Route element={<AppLayout />}>
