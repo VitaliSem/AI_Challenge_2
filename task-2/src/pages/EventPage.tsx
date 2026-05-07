@@ -27,6 +27,7 @@ export default function EventPage() {
   const [loading, setLoading] = useState(true);
   const [reportReason, setReportReason] = useState("");
   const [reportRating, setReportRating] = useState(0);
+  const [reportOpen, setReportOpen] = useState(false);
   const [rating, setRating] = useState<EventRating | null>(null);
 
   const load = async () => {
@@ -122,6 +123,7 @@ export default function EventPage() {
     toast.success("Thanks — we'll review it.");
     setReportReason("");
     setReportRating(0);
+    setReportOpen(false);
   };
 
   const spotsLeft = event.capacity > 0 ? Math.max(0, event.capacity - counts.confirmed) : null;
@@ -210,9 +212,9 @@ export default function EventPage() {
             </Link>
           )}
 
-          <Dialog>
+          <Dialog open={reportOpen} onOpenChange={setReportOpen}>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="w-full text-muted-foreground">
+              <Button variant="outline" size="sm" className="w-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground">
                 <Flag className="h-3 w-3 mr-1.5" /> Report this event
               </Button>
             </DialogTrigger>

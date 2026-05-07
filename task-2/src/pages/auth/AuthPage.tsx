@@ -30,7 +30,7 @@ export default function AuthPage() {
 
   const signUp = async () => {
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email, password,
       options: {
         data: { name },
@@ -38,7 +38,16 @@ export default function AuthPage() {
       },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      if (/already|registered|exists/i.test(error.message)) {
+        return toast.error("An account with this email already exists. Please sign in instead.");
+      }
+      return toast.error(error.message);
+    }
+    // When email confirmation is on, Supabase returns an empty identities array for duplicate emails
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      return toast.error("An account with this email already exists. Please sign in instead.");
+    }
     toast.success("Account created — you're signed in!");
     navigate(next, { replace: true });
   };
@@ -70,6 +79,9 @@ export default function AuthPage() {
             <Button className="w-full" disabled={busy} onClick={signIn}>Sign in</Button>
           </TabsContent>
           <TabsContent value="signup" className="space-y-4 mt-4">
+            <p className="text-sm text-muted-foreground bg-primary-soft/50 border border-primary/20 rounded-md p-3">
+              📧 After creating your account, please check your email inbox to verify your address before signing in.
+            </p>
             <div className="space-y-2">
               <Label>Your name</Label>
               <Input value={name} onChange={e => setName(e.target.value)} />

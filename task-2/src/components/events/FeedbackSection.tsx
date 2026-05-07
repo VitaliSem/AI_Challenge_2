@@ -47,7 +47,6 @@ export default function FeedbackSection({ eventId, hasRsvp }: { eventId: string;
     if (user) {
       const m = feedbackResult.data?.find((d: any) => d.user_id === user.id);
       setMine(m);
-      if (m) { setRating(m.rating); setComment(m.comment || ""); }
     }
   };
 
@@ -60,6 +59,9 @@ export default function FeedbackSection({ eventId, hasRsvp }: { eventId: string;
     }, { onConflict: "event_id,user_id" });
     if (error) return toast.error(error.message);
     toast.success("Thanks for your feedback!");
+    setRating(5);
+    setComment("");
+    setMine(null);
     load();
   };
 
