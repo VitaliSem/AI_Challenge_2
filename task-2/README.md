@@ -34,7 +34,7 @@ You only need an account to take action (RSVP, host, or manage events).
 ### How to Sign In
 1. Click **Sign In**
 2. Enter your email address
-3. Complete the email sign‑in flow
+3. Complete the email sign‑in flow (confirm your email from the notification)
 
 Once signed in, you can:
 - RSVP to events
