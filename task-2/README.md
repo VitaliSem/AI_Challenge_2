@@ -33,7 +33,7 @@ You only need an account to take action (RSVP, host, or manage events).
 
 ### How to Sign In
 1. Click **Sign In**
-2. Enter your email address
+2. Enter your email address (use real email address to create an account, the confirmation email will be sent to it)
 3. Complete the email sign‑in flow (confirm your email from the notification)
 
 Once signed in, you can:
