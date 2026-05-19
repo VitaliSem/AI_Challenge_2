@@ -1,0 +1,1377 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        32
+      ],
+      "id": "f66fe4ca-008f-4c97-8397-3aafe7c2586e",
+      "name": "Telegram Trigger",
+      "webhookId": "acfa47fb-a2ce-4e29-816d-8792c2e5810b",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/learn",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "e4a3677d-56d8-4b32-b5b1-c617f0712e0d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "learn"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e9c3b87e-1d97-4128-b841-88aa6389d7bd",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/quiz",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "quiz"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a13bdeac-1302-47cd-8f51-1bea37922fbb",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "ignoreCase": true,
+          "allMatchingOutputs": false
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        0
+      ],
+      "id": "1e9b894e-fe1e-4d36-8193-c7d2f2d5e26c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "Sorry, I didn’t quite understand that 🙂\nPlease choose one of the available options:\n👉 /learn \\[URL] — to start learning\n👉 /quiz — to test your knowledge",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        400
+      ],
+      "id": "ba6e7559-0f46-4072-a35e-f2016c5fb748",
+      "name": "Send a text message",
+      "webhookId": "c862b384-9101-492a-a4f8-b8c8c6dd32e1",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output.title }}\n\n{{  $json.output.content }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🧠 Quiz Time! 🏆",
+                    "additionalFields": {
+                      "callback_data": "={{ $('Edit Fields').item.json.unique_id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        -512
+      ],
+      "id": "f4671061-9b83-4f7f-a258-b47c0649cae9",
+      "name": "Send a text message1",
+      "webhookId": "d7ccac66-a8ec-405a-8bae-3e4dce262b8b",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5eeb418d-3211-4d89-87b1-e3ab821d90a4",
+              "name": "extract-url",
+              "value": "={{ $json.message.text.extractUrl() }}",
+              "type": "string"
+            },
+            {
+              "id": "5af75c48-dbeb-4308-8053-9106c8a1b25b",
+              "name": "unique_id",
+              "value": "={{ Math.random().toString(36).substring(2,12) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        -272
+      ],
+      "id": "4029cfb7-ec6f-47cd-9aa8-61d90f0fe711",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['extract-url'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI assistant integrated into a Telegram bot.\n\nTask:\nWhen a user provides a website link, analyze the page and generate a structured learning summary.\n\nProcess:\n1. Read the main content of the page.\n2. Identify the topic, purpose, and educational value.\n3. Extract key ideas, concepts, and practical insights.\n\nOutput format:\nReturn ONLY valid JSON (no extra text, no markdown):\n\n{\n  \"title\": \"learning material title\",\n  \"content\": \"formatted learning summary\",\n  \"difficulty_level\": \"Beginner | Intermediate | Advanced\"\n}\n\nField requirements:\n\n\"title\":\n- Short and clear title based on the page topic.\n\n\"content\":\n- Plain text formatted for Telegram readability.\n- Use a friendly tone and include relevant emojis (do not overuse).\n- Follow this structure inside the content field:\n\n📌 Key Points\n- 5 to 7 concise bullet points with the most important takeaways\n\n🧠 Main Concepts\n- Clear explanations of the core ideas\n- Break down complex topics into simple parts\n- Include:\n  - Definitions of key terms\n  - How concepts work\n  - Why they are important\n  - Relationships between concepts\n\n💡 Examples\n- 1 to 3 simple, practical examples\n- Prefer beginner-friendly or real-world use cases\n- If not directly available, generate simple illustrative examples\n- The examples may contain simple pieces of code using the markup of the required programming language.\n\nDifficulty level:\n\n\n🎯 Difficulty Level\n- Choose one: Beginner, Intermediate, or Advanced.\n- Include one short sentence explaining why this level was selected.\n- Add the difficulty level to the output content message\n\nRules:\n- Output must be valid JSON only.\n- Do not include explanations outside JSON.\n- Do not describe your reasoning.\n- Do not mention AI or automation.\n- Ignore ads, navigation, or unrelated content.\n- Output must be not more that 3500 characters\n- If the page cannot be analyzed, return:\n\n{\n  \"title\": \"Unavailable\",\n  \"content\": \"Sorry, the provided link could not be analyzed. Please try another one.\",\n  \"difficulty_level\": \"Unknown\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1120,
+        -416
+      ],
+      "id": "54d03100-7441-4f03-834e-b1bf93131ef9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {
+          "responseFormat": "text"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -128
+      ],
+      "id": "750bbf51-fdef-4642-ba5e-45767392931e",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "QHhgkoebzAjxIU17",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "=Thinking... 🧠✨",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1184,
+        -624
+      ],
+      "id": "a3a063da-4300-4c4c-869d-5447876d7d8e",
+      "name": "Send a text message2",
+      "webhookId": "d7ccac66-a8ec-405a-8bae-3e4dce262b8b",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA",
+          "mode": "list",
+          "cachedResultName": "AI_Challenge_Task3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "main",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Id": "={{ $('Edit Fields').item.json.unique_id }}",
+            "URL": "={{ $('Edit Fields').item.json['extract-url'] }}",
+            "Title": "={{ $json.output.title }}",
+            "Content": "={{ $json.output.content }}",
+            "AddedBy": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+            "AddedAt": "={{ $now.toUTC() }}",
+            "Difficulty": "={{ $json.output.difficulty_level }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AddedAt",
+              "displayName": "AddedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AddedBy",
+              "displayName": "AddedBy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Difficulty",
+              "displayName": "Difficulty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1568,
+        -288
+      ],
+      "id": "83965caa-1ab2-4f81-aa4d-86c6c7f2202b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4Unfg46XOhxIfWCY",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"title\": \"learning material title\",\n  \"content\": \"formatted learning summary\",\n  \"difficulty_level\": \"Beginner | Intermediate | Advanced\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        -128
+      ],
+      "id": "61e1fb7c-3849-4444-89e1-38c6c423201e",
+      "name": "Structured Output Parser",
+      "retryOnFail": false,
+      "waitBetweenTries": 0
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f7116885-9321-4f13-8eb5-9bf17921d49e",
+              "leftValue": "={{ !!$json.message }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        32
+      ],
+      "id": "43eb743d-2dc1-4ebe-a1fa-b8660b9fe326",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $json.callback_query.id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        736
+      ],
+      "id": "7c529f94-c12e-4270-9258-548a7dde8c76",
+      "name": "Answer Query a callback",
+      "webhookId": "5108134f-2f5a-47e6-959c-ca395687f15c",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.material_id }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Role\nYou are an expert Content Automation Assistant specializing in data verification and iterative quiz generation.\n\n# Objective\nCheck if quiz questions exist for a specific `material_id`. If they DO NOT exist in the database (or if the database returns data for a different material), fetch the source content, generate exactly 5 questions, and write them to the sheet one by one. If they ALREADY exist for the correct ID, stop and skip generation.\n\n# Target Data\nTarget Material ID to process: {{ $json.material_id }}\n\n# Execution Algorithm\nYou must strictly execute the following steps in sequence:\n\n## Step 1: Check Existence & Strict ID Verification\n- Call the `check_quiz_exists` tool using the Target Material ID.\n- Carefully inspect the output returned by the tool. You MUST check the `MaterialId` field inside the returned rows.\n- **CRITICAL ROUTING RULES**:\n  1. **IF QUESTIONS ALREADY EXIST**: If the tool returns rows where the `MaterialId` EXACTLY MATCHES the Target Material ID ({{ $json.material_id }}), you MUST STOP IMMEDIATELY. Output final response: \"Skipped: Questions already exist for this material.\" Do NOT proceed to Step 2.\n  2. **IF NO QUESTIONS EXIST (EMPTY OR WRONG DATA)**: If the tool returns an empty list `[]`, OR if the returned rows contain a DIFFERENT `MaterialId` than the requested Target Material ID (like on your screenshot), treat this as a sign that **questions for your target material DO NOT exist**. In this case, you MUST IGNORE the wrong rows and IMMEDIATELY PROCEED to Step 2.\n\n## Step 2: Fetch Source Content\n- Call the `get_main_content` tool using the Target Material ID to retrieve the raw article/content text.\n\n## Step 3: Quiz Generation & Mental Preparation\n- Read the retrieved source content carefully.\n- Mentally draft **exactly 5** high-quality, engaging multiple-choice questions based on the text.\n- For each question, ensure it follows these precise data rules:\n  - `question`: The text of the quiz question.\n  - `options`: 2 to 4 short answer choices (not more than 3-5 words), strictly separated by the pipe character (`|`), with no spaces around the pipe.\n  - `right_answer`: Must exactly match one of the choices inside the options string. \n  - `explanation`: A clear text explaining why this specific option is correct.\n- **CRITICAL POSITIONING RULE**: The correct option text (`right_answer`) MUST be dynamically and randomly placed at any position within the `options` string (e.g., sometimes it should be the 1st option, sometimes the 2nd, 3rd, or last). Do NOT consistently place the correct answer at the beginning or end of the choices. Mix up the order for every single question to ensure variety.\n\n## Step 4: Iterative Data Persistence (Sequential Writing)\n- Do not attempt to send all questions at once.\n- Loop through your 5 drafted questions and call the `write_new_questions` tool **exactly 5 times sequentially** (one call for each individual question).\n- For each tool call, map the parameters precisely to the fields required by the sheet: `question`, `options`, `right_answer`, and `explanation`.\n\n# Final Response Format\nOnce all 5 separate tool calls are completed successfully, provide a short summary in this format:\n\"Success: Iteratively generated and sequentially saved 5 new multiple-choice questions for material ID [Insert Target Material ID].\"\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1360,
+        896
+      ],
+      "id": "a1a6c40e-e719-46d2-8ba0-251211d58a9f",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "083bb50f-730a-40e0-9d61-a8ec27ed2e7f",
+              "name": "material_id",
+              "value": "={{ $('Telegram Trigger').item.json.callback_query.message.reply_markup.inline_keyboard[0][0].callback_data }}",
+              "type": "string"
+            },
+            {
+              "id": "5ee70c83-3e28-43ce-9ad9-c838082535e4",
+              "name": "session_id",
+              "value": "={{ Math.random().toString(36).substring(2,12) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        896
+      ],
+      "id": "8bc3cc7f-4bf0-476e-8de7-b5087bc55506",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        1152
+      ],
+      "id": "f4032454-45da-4e67-85f3-82542e0799e6",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "QHhgkoebzAjxIU17",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA",
+          "mode": "list",
+          "cachedResultName": "AI_Challenge_Task3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1442769553,
+          "mode": "list",
+          "cachedResultName": "quiz",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit#gid=1442769553"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1456,
+        1376
+      ],
+      "id": "3fda4190-9cf5-4cb3-a9ca-a3a83c5c9817",
+      "name": "check_quiz_exists",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4Unfg46XOhxIfWCY",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA",
+          "mode": "list",
+          "cachedResultName": "AI_Challenge_Task3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "main",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1296,
+        1376
+      ],
+      "id": "f2fcca11-dd8d-4be0-9b31-1eab3b0d1774",
+      "name": "get_main_content",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4Unfg46XOhxIfWCY",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA",
+          "mode": "list",
+          "cachedResultName": "AI_Challenge_Task3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1442769553,
+          "mode": "list",
+          "cachedResultName": "quiz",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit#gid=1442769553"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "MaterialId": "={{ $('Telegram Trigger').item.json.callback_query.message.reply_markup.inline_keyboard[0][0].callback_data }}",
+            "Id": "={{ Math.random().toString(36).substring(2,12) }}",
+            "Question": "={{ $json.question }}",
+            "Options": "={{ $json.options }}",
+            "RightAnswer": "={{ $json.right_answer }}",
+            "Explanation": "={{ $json.explanation }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "MaterialId",
+              "displayName": "MaterialId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Question",
+              "displayName": "Question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Options",
+              "displayName": "Options",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RightAnswer",
+              "displayName": "RightAnswer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Explanation",
+              "displayName": "Explanation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        1376
+      ],
+      "id": "09f5cbb2-f556-4b89-ab6c-ca1cfc753ced",
+      "name": "write_new_questions",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4Unfg46XOhxIfWCY",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"quiz_generation_result\": [\n    {\n      \"question\": \"What is the primary advantage of using n8n compared to its competitors?\",\n      \"options\": \"Visual editor|Low cost|Self-hosting capability|Lack of third-party integrations\",\n      \"right_answer\": \"Self-hosting capability\",\n      \"explanation\": \"Self-hosting allows users to fully control their data, secure the infrastructure, and bypass cloud platform limits.\"\n    },\n    {\n      \"question\": \"Which character must be used to separate answer options in the database?\",\n      \"options\": \"Comma|Pipe symbol (|)|Semicolon\",\n      \"right_answer\": \"Pipe symbol (|)\",\n      \"explanation\": \"According to the technical requirements, the pipe character '|' is strictly used as the option delimiter.\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1616,
+        1136
+      ],
+      "id": "3ad8e6cd-3166-4740-a688-26c17cf96b4f",
+      "name": "Structured Output Parser1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA",
+          "mode": "list",
+          "cachedResultName": "AI_Challenge_Task3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1442769553,
+          "mode": "list",
+          "cachedResultName": "quiz",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit#gid=1442769553"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2112,
+        1376
+      ],
+      "id": "c0490a3f-a0e0-429a-9588-f6b206ee3e8d",
+      "name": "get_quiz_questions",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4Unfg46XOhxIfWCY",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Material ID Context: {{ (() => { try { return $('Edit Fields1').item.json.material_id; } catch(e) { return ''; } })() }}\nUser Chat ID: {{ $('Telegram Trigger').item.json.callback_query.from.id }}\nIncoming Callback Data: {{ (() => { try { return $('Edit Fields2').item.json.user_answer; } catch(e) { return ''; } })() }}\nSession ID: {{ (() => { \n  try { \n    // Сначала проверяем верхний путь (Edit Fields2)\n    const id2 = $('Edit Fields2').item?.json?.session_id;\n    if (id2) return id2;\n  } catch(e) {}\n  \n  try { \n    // Если пусто или ошибка, проверяем нижний путь (Edit Fields1)\n    const id1 = $('Edit Fields1').item?.json?.session_id;\n    if (id1) return id1;\n  } catch(e) {}\n  \n  return ''; \n})() }}\n\n\n",
+        "options": {
+          "systemMessage": "=# Role\nYou are a strict, data-driven Telegram Quiz Master Bot. You possess NO internal knowledge about quiz questions and operate strictly as a data router between the `get_quiz_questions` tool and Telegram tools.\n\n# ABSOLUTE SAFETY RAILS\n- **FORBIDDEN TO GENERATE**: You are completely prohibited from inventing, guessing, or generating questions, options, correct answers, or explanations from your own training data.\n- **MANDATORY DATA SOURCE**: Every single piece of quiz content MUST be fetched live from the `get_quiz_questions` tool output. \n- **FALLBACK**: If the tool response is empty, contains an error, or if you cannot match the current question index, immediately stop execution and output exactly: \"ERROR_NO_DATA\". Do not try to heal or make up questions.\n\n# Core State Variables\nYou must maintain, update, and persist these hidden metrics inside your conversation memory on every turn:\n- `current_question_index`: Integer (from 1 to 5).\n- `correct_answers_count`: Integer (starts at 0).\n- `quiz_started`: Boolean (true/false).\n- `stored_material_id`: String (the material ID extracted on initialization).\n- `current_right_answer`: String (stores the correct option text for the active question).\n- `current_explanation`: String (stores the explanation for the active question).\n\n# Execution Logic\n\n## Phase 1: Initiation / Sending First Question\n- **TRIGGER**: Execute this phase IMMEDIATELY if `quiz_started` is not true, OR if `current_question_index` is not set, OR if the incoming context indicates a quiz start.\n- **Step 1 (Extract ID)**: Read the `Material ID Context` from the incoming prompt/message text. Save this value into `stored_material_id`.\n- **Step 2 (Initialize)**: Force set `current_question_index` to 1. Set `correct_answers_count` to 0. Set `quiz_started` to true.\n- **Step 3 (Fetch Data)**: Call the tool `get_quiz_questions`. Pass the saved `stored_material_id` to the tool's required arguments.\n- **Step 4 (Parse Row)**: Look at the fetched dataset. Extract the question item where the row index matches your `current_question_index` (which is 1).\n- **Step 5 (Format Options)**: Take the `options` string from the row data, split it strictly by the `|` character, and re-combine it into a clean comma-separated string (e.g., \"Option 1, Option 2, Option 3\").\n- **Step 6 (Save Answers)**: Save the extracted correct answer text into `current_right_answer` and its explanation into `current_explanation`.\n- **Step 7 (Send Poll)**: Call the tool `send_telegram_poll` using these parameters:\n  - `chat_id`: Use the User Chat ID extracted from the context.\n  - `question`: The exact text of the current question.\n  - `options`: The formatted comma-separated options string. \n  - `session_id`: Use the Session ID extracted from the context. \n- **Step 8 (Output)**: Output exactly the text \"QUIZ_INITIATED\" as your direct text response and STOP. Do not add any greeting text.\n\n## Phase 2: User Answer Evaluation & Sequential Feedback\n- **TRIGGER**: Execute this phase when an answer callback is received (e.g., index \"0\", \"1\", or \"2\").\n- **Step 1 (Map Option)**: Map the received index string to the actual option text using your conversation history from the previous poll.\n- **Step 2 (Compare)**: Compare the user's selected text with the saved `current_right_answer`.\n- **Step 3 (Formulate)**:\n  - **If Correct:** Increment `correct_answers_count` by 1 in memory. Feedback text: \"✅ Correct!\"\n  - **If Incorrect:** Feedback text: \"❌ Incorrect.\\n\\nCorrect Answer: [Insert current_right_answer]\\nExplanation: [Insert current_explanation]\"\n- **Step 4 (Send Feedback)**: Call the tool `send_telegram_feedback` using these parameters:\n  - `chat_id`: Use the User Chat ID from the context.\n  - `feedback`: The formulated feedback text block.\n- **CRITICAL SERIAL STEP**: You MUST wait for `send_telegram_feedback` tool execution to finish completely before proceeding to Phase 3.\n\n## Phase 3: Quiz Flow Control & Next Question Trigger\n- **Step 1 (Increment)**: Increment your hidden `current_question_index` by 1 and save the new value to memory.\n- **Step 2 (Branching Check)**:\n  \n  ### IF `current_question_index` <= 5:\n  - Call the tool `get_quiz_questions` again using your `stored_material_id` parameter to look at the dataset.\n  - Extract the new question row matching the updated `current_question_index`.\n  - Split and format the new options strictly by `,`.\n  - Update `current_right_answer` and `current_explanation` in memory with the new row's data.\n  - Call the tool `send_telegram_poll` using these parameters:\n    - `chat_id`: Use the User Chat ID from the context.\n    - `question`: The new question text.\n    - `options`: The new formatted options string.\n    - `session_id`: Use the Session ID extracted from the context. \n  - Output exactly the text \"QUIZ_STEP_PROCESSED\" as your conversational response and STOP.\n\n  ### IF `current_question_index` == 6:\n  - Calculate the final score percentage: `(correct_answers_count / 5) * 100`.\n  - Formulate the performance report text: \"🏁 Quiz Completed!\\n\\nYour final score: [correct_answers_count]/5 ([score_percentage]%). Thank you for participating!\"\n  - Call the tool `send_telegram_feedback` with parameters:\n    - `chat_id`: Use the User Chat ID from the context.\n    - `feedback`: The final performance report text.\n  - Clear and reset all quiz state metrics in your memory.\n  - Output exactly the text \"QUIZ_FINISHED\" and STOP.\n\n# Strict JSON Tool Call Formatting Rules\n- When generating parameters for any tool call, ensure that all strings containing double quotes (`\"`), single quotes (`'`), or newlines (`\\n`) are properly escaped with backslashes (`\\\"`, `\\\\n`) so they do not cause schema parsing crashes in the n8n system.\n- Do not add trailing commas inside parameter blocks.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1888,
+        896
+      ],
+      "id": "906a9062-27c1-41d8-b0c8-254a9ea1a796",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        1136
+      ],
+      "id": "09cb78e7-49d3-4367-b87a-1372a6a2c464",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "QHhgkoebzAjxIU17",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "=Use this tool to send a text message with interactive inline buttons to a Telegram chat. The input must be a JSON string containing \"chat_id\", \"question\", \"options\" ('|' separated strings) and \"session_id\".",
+        "jsCode": "// 1. Безопасно получаем данные\nlet payload;\nif (typeof query === 'object' && query !== null) {\n  payload = query;\n} else {\n  try {\n    payload = JSON.parse(query);\n  } catch (e) {\n    return JSON.stringify({ success: false, error: \"Не удалось распарсить JSON\" });\n  }\n}\n\nconst chatId = Number(payload.chat_id);\nconst questionText = payload.question || payload.text;\nconst options = payload.options;\nconst sessionId = payload.session_id;\n\n// 2. Форматируем массив inline-кнопок\nlet optionsArray = [];\nif (typeof options === 'string') {\n  optionsArray = options.split('|').map(item => item.trim());\n} else if (Array.isArray(options)) {\n  optionsArray = options;\n}\n\n// Заменяем callback_data на короткие индексы \"0\", \"1\", \"2\" для обхода лимита 64 байта\nconst inlineKeyboard = optionsArray.map((option, index) => [\n  { \n    text: String(option), \n    callback_data: `${index}:${sessionId}` \n  }\n]);\n\n// 3. Отправка запроса\ntry {\n  await new Promise(resolve => setTimeout(resolve, 800));\n  const response = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.telegram.org/bot8835841549:AAEWCJARgrScdfoIq3WgI6gS8Xxayq6HCp4/sendMessage',\n    body: {\n      chat_id: chatId,\n      text: questionText,\n      reply_markup: {\n        inline_keyboard: inlineKeyboard\n      }\n    },\n    json: true\n  });\n\n  return JSON.stringify({ success: true, message: \"Сообщение отправлено\" });\n} catch (error) {\n  // Вытаскиваем точную причину из ответа сервера Telegram\n  const rawDescription = error.response?.data?.description || error.message || \"Unknown network error\";\n  return JSON.stringify({ \n    success: false, \n    error: \"Telegram API Rejected Request\", \n    reason: rawDescription\n  });\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        2400,
+        1136
+      ],
+      "id": "2eb825da-b450-4b87-92ba-906ceaadf61b",
+      "name": "send_telegram_poll"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.callback_query.data }}",
+                    "rightValue": ":",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "a549d958-a064-4db2-b59b-764367563676"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "user_answer"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "40d37793-2bd3-41c4-93b4-571d36c56c88",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.callback_query.message.reply_markup.inline_keyboard[0][0].callback_data }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "material_id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        736
+      ],
+      "id": "fca4a977-6329-4562-96fd-bbee4977c4e8",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff7ddc36-0e99-4c42-b664-a9a2d02c3835",
+              "name": "user_answer",
+              "value": "={{ $('Telegram Trigger').item.json.callback_query.data.split(':').first() }}",
+              "type": "string"
+            },
+            {
+              "id": "df1c1fb8-241d-4432-bea3-219de228c678",
+              "name": "session_id",
+              "value": "={{ $('Telegram Trigger').item.json.callback_query.data.split(':').last() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        496
+      ],
+      "id": "cd02ac70-3a11-436e-b6c3-1bdc1a7b714e",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.from.id }}",
+        "text": "=📝⏰ Preparing materials for the quiz, wait a minute! 🧐⏳",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1424,
+        704
+      ],
+      "id": "295a2e9b-f0dc-43a2-8114-812ad07e65e6",
+      "name": "Send a text message3",
+      "webhookId": "d7ccac66-a8ec-405a-8bae-3e4dce262b8b",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.from.id }}",
+        "text": "=We are checking your answer! 🧐🔍",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1952,
+        704
+      ],
+      "id": "374757f9-736d-4952-bb4e-11e19aded1f0",
+      "name": "Send a text message4",
+      "webhookId": "d7ccac66-a8ec-405a-8bae-3e4dce262b8b",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to send a text message in form of feedback on user selection. The input must be a JSON string containing \"chat_id\" and \"feedback\" .",
+        "jsCode": "let payload;\nif (typeof query === 'object' && query !== null) {\n  payload = query;\n} else {\n  try {\n    payload = JSON.parse(query);\n  } catch (e) {\n    return JSON.stringify({ success: false, error: \"Не удалось распарсить JSON\" });\n  }\n}\n\nconst chatId = Number(payload.chat_id);\nconst feedbackText = payload.feedback;\n\nif (!chatId || isNaN(chatId) || !feedbackText) {\n  return JSON.stringify({ success: false, error: \"Missing required fields: chat_id or text\" });\n}\n\ntry {\n  const response = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.telegram.org/bot8835841549:AAEWCJARgrScdfoIq3WgI6gS8Xxayq6HCp4/sendMessage',\n    body: {\n      chat_id: chatId,\n      text: feedbackText\n    },\n    json: true\n  });\n\n  return JSON.stringify({ success: true, message: \"Фидбек успешно отправлен в Telegram\" });\n} catch (error) {\n  return JSON.stringify({ success: false, error: error.message });\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        2208,
+        1136
+      ],
+      "id": "f7261730-5945-4e94-9056-8516efa7c47e",
+      "name": "send_telegram_feedback"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA",
+          "mode": "list",
+          "cachedResultName": "AI_Challenge_Task3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "main",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dwkCzPv8ZYqmGt5dhddTo-wRPU0XEhLf4NH0QQ1makA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        752,
+        32
+      ],
+      "id": "12813886-71e4-4873-87ec-20820a802d7f",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4Unfg46XOhxIfWCY",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Получаем строки из Google Sheets и ID чата из триггера\nconst allItems = $input.all();\nconst chatId = $('Telegram Trigger').first().json.message.from.id;\n\n// 2. Переворачиваем массив и берем последние 5 строк\nconst lastFiveItems = allItems.reverse().slice(0, 5);\n\n// 3. Формируем массив кнопок на основе ваших колонок Title и Materialid\nconst buttons = lastFiveItems.map(item => {\n  const title = item.json.Title || \"Article without name\"; \n  const materialId = item.json.Id || \"unknown\";\n  \n  return [\n    {\n      text: title,\n      callback_data: materialId \n    }\n  ];\n});\n\n// 4. Формируем тело запроса для Telegram\nconst payload = {\n  chat_id: chatId,\n  text: \"📌 Select a material for the quiz\",\n  reply_markup: {\n    inline_keyboard: buttons\n  }\n};\n\n// 5. Отправляем запрос в Telegram\ntry {\n  const responseData = await this.helpers.request({\n    method: 'POST',\n    url: 'https://api.telegram.org/bot8835841549:AAEWCJARgrScdfoIq3WgI6gS8Xxayq6HCp4/sendMessage',\n    body: payload,\n    json: true\n  });\n\n  // Оборачиваем ответ, гарантируя n8n, что это объект\n  return [{ json: typeof responseData === 'object' ? responseData : { result: responseData } }];\n} catch (error) {\n  return [{ json: { error: error.message } }];\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        48
+      ],
+      "id": "c3f33e6e-bd7a-45ab-88e6-0c5606c3cba5",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "Let's start learning! 📚🧠🎓",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        272
+      ],
+      "id": "c121e95d-967e-49c9-8f90-1c176ad219bf",
+      "name": "Send a text message5",
+      "webhookId": "0eb7ad1c-a532-4627-aea1-47d031b41caf",
+      "credentials": {
+        "telegramApi": {
+          "id": "eCAmIZ2Mozu52g1c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ (() => { \n  try { \n    // Сначала проверяем верхний путь (Edit Fields2)\n    const id2 = $('Edit Fields2').item?.json?.session_id;\n    if (id2) return id2;\n  } catch(e) {}\n  \n  try { \n    // Если пусто или ошибка, проверяем нижний путь (Edit Fields1)\n    const id1 = $('Edit Fields1').item?.json?.session_id;\n    if (id1) return id1;\n  } catch(e) {}\n  \n  return ''; \n})() }}\n",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        1936,
+        1136
+      ],
+      "id": "12efa7bf-65df-48cb-8683-af7c22c8a4f7",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Answer Query a callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer Query a callback": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_quiz_exists": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_main_content": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_new_questions": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_quiz_questions": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        []
+      ]
+    },
+    "send_telegram_poll": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_telegram_feedback": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "22ac21f3-f442-481b-a2bb-df5711f0d35e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fcd0e06e526aa27953a39d7255e620d3b89bb834dfba777bc10ef8a1a4bed676"
+  },
+  "id": "DkKCWYyJfRAJIDM1",
+  "tags": []
+}
